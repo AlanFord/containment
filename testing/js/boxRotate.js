@@ -9,6 +9,8 @@ var scene, camera, renderer, pointLight;
 // Set the scene size.
 const WIDTH = window.innerWidth;
 const HEIGHT = window.innerHeight;
+
+// Set some camera attributes.
 const VIEW_ANGLE = 70;  // not 45???????
 const ASPECT = WIDTH / HEIGHT;
 const NEAR = 0.1;

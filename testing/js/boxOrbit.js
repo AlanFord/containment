@@ -3,7 +3,11 @@
 // https://www.jonathan-petitcolas.com/2013/04/02/create-rotating-cube-in-webgl-with-threejs.html
 // and
 // http://blog.teamtreehouse.com/the-beginners-guide-to-three-js
-//
+// 
+
+var scene, camera, renderer, pointLight, controls;
+
+var box;
 
 // Set the scene size.
   const WIDTH = window.innerWidth;
@@ -13,89 +17,139 @@
   const VIEW_ANGLE = 45;
   const ASPECT = WIDTH / HEIGHT;
   const NEAR = 0.1;
-  const FAR = 10000;
+  const FAR = 1000;
 
-  // Get the DOM element to attach to
-  const container =
+
+  function init() {
+    scene = new THREE.Scene();
+	initAxes();
+	initPlane();
+	initCube();
+	initLight();
+	initCamera();
+	initRenderer();
+	initControls();
+	
+	// Get the DOM element to attach to
+	const container =
       document.querySelector('#container');
-
-  // Create a WebGL renderer, camera
-  // and a scene
-  const renderer = new THREE.WebGLRenderer();
-  const camera =
+	
+	// Attach the renderer-supplied
+	// DOM element.
+	container.appendChild(renderer.domElement);
+  }
+  
+  function initAxes() {
+	var axes = new THREE.AxisHelper(20);
+	scene.add(axes);
+  }
+  
+  function initPlane() {
+	var planeGeometry = new THREE.PlaneGeometry(60, 20, 1, 1);
+	var planeMaterial = new THREE.MeshBasicMaterial({
+		color: 0xcccccc
+	});
+	var plane = new THREE.Mesh(planeGeometry, planeMaterial);
+	plane.rotation.x = -0.5 * Math.PI;
+	plane.position = new THREE.Vector3(15, 0, 0);
+	scene.add(plane);	
+  }
+  
+  function  initCamera() {
+    // Create a WebGL renderer, camera
+	// and a scene
+	camera =
       new THREE.PerspectiveCamera(
           VIEW_ANGLE,
           ASPECT,
           NEAR,
           FAR
       );
-
-  const scene = new THREE.Scene();
-
-  // Add the camera to the scene.
-  camera.position.x = -30;
+	camera.position.x = -30;
 	camera.position.y = 40;
 	camera.position.z = 30;
-  scene.add(camera);
-
-  // Start the renderer.
-  renderer.setSize(WIDTH, HEIGHT);
-
-  // Attach the renderer-supplied
-  // DOM element.
-  container.appendChild(renderer.domElement);
-
-  // create a point light
-  const pointLight =
+	camera.lookAt(scene.position);
+  }
+  
+  function initLight() {
+	// create a point light
+	const pointLight =
     new THREE.PointLight(0xFFFFFF);
 
-  // set its position
-  pointLight.position.x = 10;
-  pointLight.position.y = 50;
-  pointLight.position.z = 130;
+	// set its position
+	pointLight.position.x = 10;
+	pointLight.position.y = 50;
+	pointLight.position.z = 130;
 
-  // add to the scene
-  scene.add(pointLight);
+	// add to the scene
+	scene.add(pointLight);
+  }
+  
+  function initRenderer() {
+	renderer = new THREE.WebGLRenderer();
+	renderer.setClearColor(0xEEEEEE);  // gives a nice background color
+	// Start the renderer.
+	renderer.setSize(WIDTH, HEIGHT);
+  }
+  
+function initCube() {
+	var cubeGeometry = new THREE.CubeGeometry(4, 4, 4);
+	var cubeMaterial = new THREE.MeshBasicMaterial({
+		color: 0xff0000,
+		wireframe: true
+		});
+	var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+	cube.position.x = -4;
+	cube.position.y = 3;
+	cube.position.z = 0;
+	scene.add(cube);
+}
 
-  // create the sphere's material
-  const sphereMaterial =
-    new THREE.MeshLambertMaterial(
-      {
-        color: 0xCC0000
-      });
+  //...........................................................
+  // Is this useless code?
+  // boxRotate.js does not add the camera to the scene
+  //...........................................................
+  // Add the camera to the scene.
+  //scene.add(camera);
 
-  // Set up the sphere vars
-  const RADIUS = 2;
-  const SEGMENTS = 16;
-  const RINGS = 16;
 
-  const box = new THREE.Mesh(
-
-    new THREE.BoxGeometry(
-      RADIUS*2,
-      RADIUS*2,
-      RADIUS*2),
-
-    sphereMaterial);
-
-  // Move the Box
-  box.position.x = -4;
-	box.position.y = 3;
-	box.position.z = 0;
-
-  // Finally, add the sphere to the scene.
-  scene.add(box);
-
+function initControls() {
   // Add OrbitControls so that we can pan around with the mouse.
-  var controls = new THREE.OrbitControls(camera);
+  controls = new THREE.OrbitControls(camera, renderer.domElement );
+ 
+	//controls.addEventListener( 'change', update ); // call this only in static scenes (i.e., if there is no animation loop) 
+  
+	controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled 
+	controls.dampingFactor = 0.25; 
 
+	controls.panningMode = THREE.HorizontalPanning; // default is THREE.ScreenSpacePanning 
+
+	//controls.minDistance = 100; 
+	controls.maxDistance = 500 
+
+	controls.maxPolarAngle = Math.PI / 2; 
+    
+  }
+  
+  init();
+  // this is equivalent to the render() command in boxRotate.js
+  //
+  // Schedule the first frame.
+  //requestAnimationFrame(update);
+
+(function animate() {
+requestAnimationFrame(animate);
+renderer.render(scene, camera);
+controls.update();
+})();
+
+/*
+  // this is equivalent to the render() function in boxRotate.js
   function update () {
+    // Schedule the next frame.
+    requestAnimationFrame(update);
     // Draw!
     renderer.render(scene, camera);
     controls.update();
-    // Schedule the next frame.
-    requestAnimationFrame(update);
   }
-
-  // Schedule the first frame.
-  requestAnimationFrame(update);
+*/
