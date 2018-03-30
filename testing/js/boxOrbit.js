@@ -3,7 +3,7 @@
 // https://www.jonathan-petitcolas.com/2013/04/02/create-rotating-cube-in-webgl-with-threejs.html
 // and
 // http://blog.teamtreehouse.com/the-beginners-guide-to-three-js
-// 
+//
 
 // Set the scene size.
   const WIDTH = window.innerWidth;
@@ -33,6 +33,9 @@
   const scene = new THREE.Scene();
 
   // Add the camera to the scene.
+  camera.position.x = -30;
+	camera.position.y = 40;
+	camera.position.z = 30;
   scene.add(camera);
 
   // Start the renderer.
@@ -62,7 +65,7 @@
       });
 
   // Set up the sphere vars
-  const RADIUS = 50;
+  const RADIUS = 2;
   const SEGMENTS = 16;
   const RINGS = 16;
 
@@ -75,9 +78,10 @@
 
     sphereMaterial);
 
-  // Move the Box back in Z so we
-  // can see it.
-  box.position.z = -300;
+  // Move the Box
+  box.position.x = -4;
+	box.position.y = 3;
+	box.position.z = 0;
 
   // Finally, add the sphere to the scene.
   scene.add(box);
